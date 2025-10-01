@@ -1,7 +1,6 @@
 
 import time
 import pytest
-
 from selenium.webdriver.common.by import By
 from Sprint_5.locators import HOME_URL, REG_NAME, REG_EMAIL, REG_PASSWORD, REG_SUBMIT
 

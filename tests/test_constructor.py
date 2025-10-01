@@ -1,6 +1,5 @@
 import time
 import pytest
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Sprint_5.locators import HOME_URL, TAB_BUNS, TAB_SAUCES, TAB_FILLINGS

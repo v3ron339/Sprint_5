@@ -1,6 +1,5 @@
 from selenium.webdriver.common.by import By
 
-
 # --- Главная страница ---
 HOME_URL = "https://stellarburgers.nomoreparties.site/"
 
