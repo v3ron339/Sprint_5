@@ -31,3 +31,10 @@ LOGO = (By.CSS_SELECTOR, "a[aria-label='Stellar Burgers']")
 TAB_BUNS = (By.XPATH, "//span[contains(text(),'Булки')]")
 TAB_SAUCES = (By.XPATH, "//span[contains(text(),'Соусы')]")
 TAB_FILLINGS = (By.XPATH, "//span[contains(text(),'Начинки')]")
+# кнопка перехода в конструктор
+BUTTON_CONSTRUCTOR = (By.XPATH, "//p[contains(., 'Конструктор')]")
+
+# уникальные блоки/контент для каждой вкладки — используем селекторы, которые различают содержимое
+SECTION_BUNS = (By.XPATH, "//div[contains(@class, 'bun') or .//p[text()='Булки'] ]")      
+SECTION_SAUCES = (By.XPATH, "//div[contains(@class, 'sauce') or .//p[text()='Соусы'] ]")
+SECTION_FILLINGS = (By.XPATH, "//div[contains(@class, 'main') or .//p[text()='Начинки'] ]")

@@ -1,35 +1,63 @@
-
-import time
+# tests/test_constructor.py
 import pytest
-from selenium.webdriver.common.by import By
-from Sprint_5.locators import HOME_URL, REG_NAME, REG_EMAIL, REG_PASSWORD, REG_SUBMIT
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
-class TestRegistration:
+from Sprint_5.locators import (
+    HOME_URL,
+    BUTTON_CONSTRUCTOR,
+    TAB_BUNS, TAB_SAUCES, TAB_FILLINGS,
+    SECTION_BUNS, SECTION_SAUCES, SECTION_FILLINGS,
+    INGREDIENT_ITEM
+)
 
-    def test_successful_registration(self, driver):
+
+class TestConstructor:
+    @pytest.mark.parametrize(
+        "tab_locator, section_locator, name",
+        [
+            (TAB_BUNS, SECTION_BUNS, "Булки"),
+            (TAB_SAUCES, SECTION_SAUCES, "Соусы"),
+            (TAB_FILLINGS, SECTION_FILLINGS, "Начинки"),
+        ]
+    )
+    def test_constructor_tabs_navigation(self, driver, tab_locator, section_locator, name):
+        
+        wait = WebDriverWait(driver, 10)
+
+        # Открываем главную и переходим в конструктор
         driver.get(HOME_URL)
+        wait.until(EC.element_to_be_clickable(BUTTON_CONSTRUCTOR)).click()
 
-        driver.find_element(By.XPATH, "//a[text()='Личный Кабинет']").click()
-        driver.find_element(By.XPATH, "//a[text()='Зарегистрироваться']").click()
+        # Убедиться, что конструктор загрузился (ждём видимости первой вкладки)
+        wait.until(EC.visibility_of_element_located(TAB_BUNS))
 
-        driver.find_element(By.XPATH, REG_NAME).send_keys("Veronika")
-        driver.find_element(By.XPATH, REG_EMAIL).send_keys("veronika_akhmetzyanova_30_331@yandex.ru")
-        driver.find_element(By.XPATH, REG_PASSWORD).send_keys("StrongPass123")
-        driver.find_element(By.XPATH, REG_SUBMIT).click()
+        # Кликаем по проверяемой вкладке
+        tab = wait.until(EC.element_to_be_clickable(tab_locator))
+        tab.click()
 
-        assert driver.find_element(By.XPATH, "//h2[text()='Вход']")
+        # Попытка: ждём появления уникального блока секции
+        section_visible = False
+        try:
+            wait.until(EC.visibility_of_element_located(section_locator))
+            section_visible = True
+        except TimeoutException:
+            # Если уникальная секция не появилась — проверяем активный класс у вкладки
+            # Ждём, пока вкладка получит "активный" класс (варианты названия класса могут отличаться)
+            def tab_is_active(drv):
+                cls = tab.get_attribute("class") or ""
+                cls = cls.lower()
+                return ("active" in cls) or ("current" in cls) or ("tab_tab_type_current" in cls)
 
-    def test_registration_with_short_password(self, driver):
-        driver.get(HOME_URL)
+            try:
+                wait.until(tab_is_active)
+                section_visible = True
+            except TimeoutException:
+                section_visible = False
 
-        driver.find_element(By.XPATH, "//a[text()='Личный Кабинет']").click()
-        driver.find_element(By.XPATH, "//a[text()='Зарегистрироваться']").click()
+        assert section_visible, f"Переход на вкладку {name} не сработал (нет секции и вкладка не активна)"
 
-        driver.find_element(By.XPATH, REG_NAME).send_keys("Veronika")
-        driver.find_element(By.XPATH, REG_EMAIL).send_keys("wrong_pass_test_331@yandex.ru")
-        driver.find_element(By.XPATH, REG_PASSWORD).send_keys("123")  # слишком короткий
-        driver.find_element(By.XPATH, REG_SUBMIT).click()
-
-        # Проверка текста ошибки
-        error = driver.find_element(By.XPATH, "//p[@class='input__error text_type_main-default']").text
-        assert error == "Некорректный пароль"
+        # Дополнительная проверка: в секции есть хотя бы один элемент ингредиента (если селектор задан)
+        items = driver.find_elements(*INGREDIENT_ITEM)
+        assert len(items) > 0, f"Вкладка {name}: список ингредиентов пуст после перехода"

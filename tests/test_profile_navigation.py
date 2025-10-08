@@ -3,7 +3,7 @@ import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Sprint_5.locators import HOME_URL, BUTTON_PROFILE, LOGO, TAB_BUNS
-from Sprint_5.conftest import register_user
+from Sprint_5.helpers import register_user
 
 def test_profile_and_constructor_and_logo(driver, new_user):
     # регистрация и переход в профиль

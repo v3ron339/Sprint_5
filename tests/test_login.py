@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from Sprint_5.locators import HOME_URL, BUTTON_LOGIN, LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_SUBMIT
-from Sprint_5.conftest import register_user
+from Sprint_5.helpers import register_user
 
 def login_via_login_form(driver, email, password):
     driver.get(HOME_URL + "login")
